@@ -64,10 +64,67 @@ void fft_inverse(double complex t[MAX_SIZE], double complex s[MAX_SIZE], int n) 
     }
 }
 
-void fft_forward_2d(double complex matrix[MAX_SIZE][MAX_SIZE], int width, int height) {
+void make_line(double complex matrix[MAX_SIZE][MAX_SIZE], int width, double complex vector[], int linha){
+    
+    for (int i=0; i<width; i++){
+        vector[i] = matrix[linha][i];
+    }
 }
+void make_column(double complex matrix[MAX_SIZE][MAX_SIZE], int height, double complex vector[], int coluna){
 
+    for (int i=0; i<height; i++){
+        vector[i] = matrix[i][coluna];
+    }
+}
+void fft_forward_2d(double complex matrix[MAX_SIZE][MAX_SIZE], int width, int height) {
+
+    //linhas
+    for (int l = 0; l < height; l++){
+
+        double complex linha[width], vector_linha[width];
+        make_line(matrix, width, linha, l);
+        fft_forward(linha, vector_linha, width);
+
+        for (int i_coluna = 0; i_coluna < width; i_coluna++){
+            matrix[l][i_coluna] = vector_linha[i_coluna];
+        }
+    }
+    //colunas
+    for (int c = 0; c < width; c++){
+
+        double complex coluna[height], vector_coluna[height];
+        make_column(matrix, height, vector_coluna, c);
+        fft_forward(vector_coluna, coluna, height);
+
+        for (int linha = 0; linha < height; linha++){
+            matrix[linha][c] = coluna[linha];
+        }
+    }
+}
 void fft_inverse_2d(double complex matrix[MAX_SIZE][MAX_SIZE], int width, int height) {
+    
+    //linhas
+    for (int l = 0; l < height; l++){
+
+        double complex linha[width], vector_linha[width];
+        make_line(matrix, width, linha, l);
+        fft_inverse(linha, vector_linha, width);
+
+        for (int i_coluna = 0; i_coluna < width; i_coluna++){
+            matrix[l][i_coluna] = vector_linha[i_coluna];
+        }
+    }
+    //colunas
+    for (int c = 0; c < width; c++){
+
+        double complex coluna[height], vector_coluna[height];
+        make_column(matrix, height, vector_coluna, c);
+        fft_inverse(vector_coluna, coluna, height);
+
+        for (int linha = 0; linha < height; linha++){
+            matrix[linha][c] = coluna[linha];
+        }
+    }
 }
 
 void filter(double complex input[MAX_SIZE][MAX_SIZE], double complex output[MAX_SIZE][MAX_SIZE], int width, int height, int flip) {
